@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Determine next version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          latest_tag="$(git tag -l --sort=-v:refname | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)"
+
+          if [[ -z "$latest_tag" ]]; then
+            echo "No semver tags found. Initial release will be 0.1.0."
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "next_version=0.1.0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          commit_count="$(git rev-list --count "${latest_tag}..HEAD")"
+          if [[ "$commit_count" -eq 0 ]]; then
+            echo "No new commits since ${latest_tag}. Skipping release."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          log_file="$(mktemp)"
+          git log "${latest_tag}..HEAD" --pretty=format:'%s%n%b%n----END----' > "$log_file"
+
+          bump=""
+          if grep -Eq 'BREAKING CHANGE:|^[a-zA-Z]+(\([^)]+\))?!:' "$log_file"; then
+            bump="major"
+          elif grep -Eq '^feat(\([^)]+\))?:' "$log_file"; then
+            bump="minor"
+          elif grep -Eq '^(fix|perf|refactor|revert)(\([^)]+\))?:' "$log_file"; then
+            bump="patch"
+          fi
+
+          if [[ -z "$bump" ]]; then
+            echo "No releasable Conventional Commits found since ${latest_tag}. Skipping release."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          base_version="${latest_tag#v}"
+          IFS='.' read -r major minor patch <<< "$base_version"
+
+          case "$bump" in
+            major)
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            minor)
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            patch)
+              patch=$((patch + 1))
+              ;;
+          esac
+
+          next_version="${major}.${minor}.${patch}"
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
+          echo "next_version=$next_version" >> "$GITHUB_OUTPUT"
+          echo "bump=$bump" >> "$GITHUB_OUTPUT"
+
+      - name: Skip summary
+        if: steps.version.outputs.should_release != 'true'
+        run: echo "Release skipped."
+
+      - name: Install dependencies
+        if: steps.version.outputs.should_release == 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Set package version
+        if: steps.version.outputs.should_release == 'true'
+        run: npm version "${{ steps.version.outputs.next_version }}" --no-git-tag-version
+
+      - name: Publish to npmjs
+        if: steps.version.outputs.should_release == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub release
+        if: steps.version.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.next_version }}
+          generate_release_notes: true
+          target_commitish: ${{ github.sha }}
