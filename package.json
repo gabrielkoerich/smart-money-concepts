@@ -1,0 +1,51 @@
+{
+  "name": "smart-money-concepts",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.15.29",
+    "chai": "^6.2.1",
+    "mocha": "^11.7.5",
+    "typescript": "^5.9.3"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "description": "Smart Money Concepts (ICT) analysis engine for market structure, order blocks, fair value gaps, liquidity grabs, and more",
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "keywords": [
+    "smart-money",
+    "ict",
+    "trading",
+    "market-structure",
+    "order-blocks",
+    "fair-value-gap",
+    "fvg",
+    "bos",
+    "choch",
+    "liquidity",
+    "technical-analysis",
+    "wyckoff"
+  ],
+  "license": "MIT",
+  "mocha": {
+    "require": "tests/config/mocha.ts",
+    "reporter": "spec"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "bun run build",
+    "typecheck": "tsc --noEmit",
+    "test": "NODE_ENV=test bun --bun mocha -t 5000 'tests/**/*.test.ts' --exit"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts"
+}
