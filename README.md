@@ -8,6 +8,7 @@ Zero runtime dependencies. Feed it OHLCV candles, get back structured market ana
 
 ```bash
 npm install smart-money-concepts
+bun install smart-money-concepts
 ```
 
 ## Quick Start
