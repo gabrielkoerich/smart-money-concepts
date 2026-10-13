@@ -36,6 +36,10 @@
     "wyckoff"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielkoerich/smart-money-concepts.git"
+  },
   "mocha": {
     "require": "tests/config/mocha.ts",
     "reporter": "spec"

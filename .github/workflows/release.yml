@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: write
+  # npm trusted publishing, the job proves itself to npm with an OIDC token instead of an npm token
+  id-token: write
 
 jobs:
   release:
@@ -25,7 +27,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Trusted publishing needs npm 11.5.1 or later, which Node 24 ships
+          node-version: 24
           registry-url: https://registry.npmjs.org
 
       - name: Determine next version
@@ -106,8 +109,6 @@ jobs:
       - name: Publish to npmjs
         if: steps.version.outputs.should_release == 'true'
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub release
         if: steps.version.outputs.should_release == 'true'
