@@ -1,6 +1,6 @@
 {
   "name": "smart-money-concepts",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "./dist/index.js",
   "devDependencies": {
     "@types/chai": "^5.2.3",
