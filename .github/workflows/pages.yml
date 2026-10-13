@@ -3,7 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: [docs/**]
+    paths:
+      - README.md
+      - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions:
@@ -19,29 +21,22 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page-url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+
+      - name: Build and deploy docs from the README with the shared theme
+        id: deployment
+        uses: gabrielkoerich/zola-docs-action@v1
         with:
-          path: docs
-      - id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Purge Cloudflare cache
-        env:
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: |
-          if [ -z "$CF_API_TOKEN" ]; then
-            echo "::warning::CF_API_TOKEN is not set, Cloudflare cache was not purged"
-            exit 0
-          fi
-
-          response=$(curl -sS -X POST "https://api.cloudflare.com/client/v4/zones/b4f279fbdc18c1d62d60751dcefbc03e/purge_cache" \
-            -H "Authorization: Bearer $CF_API_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}')
-          echo "$response"
-          echo "$response" | grep -q '"success":true' || echo "::warning::Cloudflare cache purge failed"
+          readme: README.md
+          base-url: https://projects.gabrielkoerich.com/smart-money-concepts
+          zola-version: "0.19.2"
+          deploy: "true"
+          cloudflare-token: ${{ secrets.CF_API_TOKEN }}
+          extra: |
+            author = "Gabriel Koerich"
+            home_url = "https://gabrielkoerich.com"
+            tagline = "Senior Engineer · AI Workflows · Solana / DeFi"
+            nav = [{ name = "Docs", url = "@/_index.md" }, { name = "Projects", url = "https://projects.gabrielkoerich.com" }, { name = "npm", url = "https://www.npmjs.com/package/smart-money-concepts" }]

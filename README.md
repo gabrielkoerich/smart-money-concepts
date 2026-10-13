@@ -194,14 +194,14 @@ setLogger({
 | Feature | Detection |
 |---|---|
 | Market structure | Swing and internal structure, with BOS and CHoCH |
-| Order blocks | HP, continuation, breaker, mitigation and reclaimed types |
-| Fair value gaps | Bullish and bearish imbalances, with fill tracking |
+| Order blocks | HP, continuation, breaker, mitigation and reclaimed types, with formation, mitigation and price interaction tracking |
+| Fair value gaps | Bullish and bearish imbalances, with fill tracking and an optional automatic threshold |
 | Equal highs and lows | Liquidity pools |
 | Liquidity grabs | Stop hunts at equal levels, with follow-through detection |
 | Premium and discount zones | Zones with a 5% threshold, matching the Pine Script version |
-| Volume | Spikes, institutional volume and the running average |
+| Volume | Spikes, institutional volume and the running average, with a configurable spike threshold |
 | Sessions | Asian, London, London and New York overlap, New York |
-| Market maker model | Wyckoff phases: accumulation, markup, distribution, markdown |
+| Market maker model | Wyckoff phases (accumulation, markup, distribution, markdown) with a confidence score |
 | Order flow | Absorption, exhaustion, initiative and responsive signals |
 | Confluence | A multi-factor score of more than 100 points |
 | Exhaustion | Multi-factor exhaustion analysis |
