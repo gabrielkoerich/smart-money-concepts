@@ -36,7 +36,4 @@ jobs:
           deploy: "true"
           cloudflare-token: ${{ secrets.CF_API_TOKEN }}
           extra: |
-            author = "Gabriel Koerich"
-            home_url = "https://gabrielkoerich.com"
-            tagline = "Senior Engineer · AI Workflows · Solana / DeFi"
-            nav = [{ name = "Docs", url = "@/_index.md" }, { name = "Projects", url = "https://projects.gabrielkoerich.com" }, { name = "npm", url = "https://www.npmjs.com/package/smart-money-concepts" }]
+            nav = [{ name = "Docs", url = "@/_index.md" }, { name = "npm", url = "https://www.npmjs.com/package/smart-money-concepts" }]
