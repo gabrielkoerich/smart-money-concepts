@@ -1,17 +1,17 @@
 # smart-money-concepts
 
-A TypeScript implementation of **Smart Money Concepts (SMC)** / **ICT methodology** for market structure analysis. Detects order blocks, fair value gaps, breaks of structure, changes of character, liquidity grabs, and more.
+A TypeScript implementation of Smart Money Concepts (SMC) and the ICT methodology for market structure analysis. It detects order blocks, fair value gaps, breaks of structure, changes of character and liquidity grabs.
 
-Zero runtime dependencies. Feed it OHLCV candles, get back structured market analysis.
+It has no runtime dependencies. You feed it OHLCV candles and it returns structured market analysis.
 
 ## Installation
 
 ```bash
 npm install smart-money-concepts
-bun install smart-money-concepts
+bun add smart-money-concepts
 ```
 
-## Quick Start
+## Quick start
 
 ```typescript
 import { SmartMoneyConcepts } from 'smart-money-concepts'
@@ -38,7 +38,7 @@ const zone = smc.getCurrentZone()      // 'Premium' | 'Discount' | 'Equilibrium'
 const obs  = smc.getOrderBlocks()      // { swing: OrderBlock[], internal: OrderBlock[] }
 ```
 
-## Bulk Processing (Backtesting)
+## Bulk processing for backtests
 
 ```typescript
 const candles = [
@@ -51,9 +51,9 @@ const allAlerts = smc.updateBulk(candles)
 // Returns an Alerts object for each candle
 ```
 
-## Real-Time Updates
+## Real-time updates
 
-When streaming live data, the same timestamp is treated as an update to the current bar:
+With live data, a candle with the same timestamp updates the current bar:
 
 ```typescript
 // New bar
@@ -66,7 +66,7 @@ smc.update(107, 100, 102, 106, 1700000000, 800)
 smc.update(108, 103, 106, 107, 1700000060, 600)
 ```
 
-## API Reference
+## API reference
 
 ### Constructor
 
@@ -74,7 +74,7 @@ smc.update(108, 103, 106, 107, 1700000060, 600)
 new SmartMoneyConcepts(config?: SmartMoneyConceptsConfig)
 ```
 
-### Core Methods
+### Core methods
 
 | Method | Returns | Description |
 |--------|---------|-------------|
@@ -83,7 +83,7 @@ new SmartMoneyConcepts(config?: SmartMoneyConceptsConfig)
 | `updateBulk(candles)` | `Alerts[]` | Process an array of candles at once. |
 | `clearAllData()` | `void` | Reset all internal state. |
 
-### Market State
+### Market state
 
 | Method | Returns | Description |
 |--------|---------|-------------|
@@ -96,42 +96,42 @@ new SmartMoneyConcepts(config?: SmartMoneyConceptsConfig)
 | `getLiquidityGrabs(limit?)` | `LiquidityGrab[]` | Recent liquidity grab events |
 | `getConsecutiveCandles()` | `object` | Consecutive bullish/bearish candle count |
 
-### Debug & Diagnostics
+### Debugging
 
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `getAlerts()` | `Alerts` | Current bar's alerts (same as `update()` return value) |
-| `getDebugInfo(price?)` | `object` | Comprehensive market state snapshot |
+| `getDebugInfo(price?)` | `object` | Snapshot of the market state |
 | `getPerformanceStats()` | `object` | Processing time metrics |
 | `getMemoryStats()` | `object` | Internal array sizes |
 | `getConfiguration()` | `object` | Current config values |
 | `getCurrentZoneTraillings()` | `object` | Zone threshold levels |
 
-### Alerts Object
+### Alerts object
 
 Every call to `update()` returns an `Alerts` object with these boolean flags:
 
-**Structure Alerts:**
-- `swingBullishBOS` / `swingBearishBOS` - Swing Break of Structure
-- `swingBullishCHoCH` / `swingBearishCHoCH` - Swing Change of Character
-- `internalBullishBOS` / `internalBearishBOS` - Internal Break of Structure
-- `internalBullishCHoCH` / `internalBearishCHoCH` - Internal Change of Character
+#### Structure
+- `swingBullishBOS` / `swingBearishBOS`: Swing Break of Structure
+- `swingBullishCHoCH` / `swingBearishCHoCH`: Swing Change of Character
+- `internalBullishBOS` / `internalBearishBOS`: Internal Break of Structure
+- `internalBullishCHoCH` / `internalBearishCHoCH`: Internal Change of Character
 
-**Order Block Alerts:**
-- `swingBullishObBrokenDown` / `swingBearishObBrokenUp` - Swing OB mitigation
-- `internalBullishObBrokenDown` / `internalBearishObBrokenUp` - Internal OB mitigation
-- `insideInternalBullishOrderBlock` / `insideSwingBullishOrderBlock` - Price inside bullish OB
-- `insideInternalBearishOrderBlock` / `insideSwingBearishOrderBlock` - Price inside bearish OB
+#### Order blocks
+- `swingBullishObBrokenDown` / `swingBearishObBrokenUp`: Swing OB mitigation
+- `internalBullishObBrokenDown` / `internalBearishObBrokenUp`: Internal OB mitigation
+- `insideInternalBullishOrderBlock` / `insideSwingBullishOrderBlock`: Price inside bullish OB
+- `insideInternalBearishOrderBlock` / `insideSwingBearishOrderBlock`: Price inside bearish OB
 
-**Other Alerts:**
-- `equalHighs` / `equalLows` - Equal highs/lows (liquidity pools)
-- `bullishFairValueGap` / `bearishFairValueGap` - FVG detection
-- `liquidityGrab` - Liquidity grab at equal levels
-- `volumeSpike` / `institutionalVolume` - Volume events
-- `sessionBreakout` - Session breakout detection
-- `changeOfStateOfDelivery` - ICT COSD
-- `breakerBlockFormed` - HP OB failed, became breaker
-- `unicornSetup` - Breaker + FVG alignment (The Unicorn)
+#### Other
+- `equalHighs` / `equalLows`: Equal highs/lows (liquidity pools)
+- `bullishFairValueGap` / `bearishFairValueGap`: FVG detection
+- `liquidityGrab`: Liquidity grab at equal levels
+- `volumeSpike` / `institutionalVolume`: Volume events
+- `sessionBreakout`: Session breakout detection
+- `changeOfStateOfDelivery`: ICT COSD
+- `breakerBlockFormed`: HP OB failed, became breaker
+- `unicornSetup`: Breaker + FVG alignment (The Unicorn)
 
 Use `alerts.getTrueAlerts()` to get only the active alerts as an object.
 
@@ -175,9 +175,9 @@ const smc = new SmartMoneyConcepts({
 })
 ```
 
-## Custom Logger
+## Custom logger
 
-By default, debug output is silenced. You can plug in your own logger:
+Debug output is off by default. To see it, pass your own logger:
 
 ```typescript
 import { setLogger } from 'smart-money-concepts'
@@ -189,20 +189,22 @@ setLogger({
 })
 ```
 
-## What It Detects
+## What it detects
 
-- **Market Structure**: Swing and internal structure with BOS/CHoCH detection
-- **Order Blocks**: HP, Continuation, Breaker, Mitigation, and Reclaimed types
-- **Fair Value Gaps**: Bullish and bearish imbalances with fill tracking
-- **Equal Highs/Lows**: Liquidity pool identification
-- **Liquidity Grabs**: Stop hunts at equal levels with follow-through detection
-- **Premium/Discount Zones**: 5% threshold zone calculation (Pine Script compliant)
-- **Volume Analysis**: Spike detection, institutional volume, average tracking
-- **Session Analysis**: Asian, London, London-NY overlap, New York sessions
-- **Market Maker Model**: Wyckoff phase detection (Accumulation, Markup, Distribution, Markdown)
-- **Order Flow**: Absorption, exhaustion, initiative, and responsive signals
-- **Confluence Scoring**: 100+ point multi-factor scoring system
-- **Exhaustion Detection**: Multi-factor exhaustion analysis
+| Feature | Detection |
+|---|---|
+| Market structure | Swing and internal structure, with BOS and CHoCH |
+| Order blocks | HP, continuation, breaker, mitigation and reclaimed types |
+| Fair value gaps | Bullish and bearish imbalances, with fill tracking |
+| Equal highs and lows | Liquidity pools |
+| Liquidity grabs | Stop hunts at equal levels, with follow-through detection |
+| Premium and discount zones | Zones with a 5% threshold, matching the Pine Script version |
+| Volume | Spikes, institutional volume and the running average |
+| Sessions | Asian, London, London and New York overlap, New York |
+| Market maker model | Wyckoff phases: accumulation, markup, distribution, markdown |
+| Order flow | Absorption, exhaustion, initiative and responsive signals |
+| Confluence | A multi-factor score of more than 100 points |
+| Exhaustion | Multi-factor exhaustion analysis |
 
 ## Types
 

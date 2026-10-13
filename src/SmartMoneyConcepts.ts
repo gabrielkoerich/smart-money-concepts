@@ -44,18 +44,18 @@ export class SmartMoneyConcepts {
     private equalHighsLowsLengthInput: number = 3
     private equalHighsLowsThresholdInput: number = 0.1
 
-    // Phase 1 - ICT Methodology Enhancements
+    // ICT methodology
     private onlyTradeFreshOBs: boolean = true // Default: only fresh OBs
     private maxOBMitigations: number = 1 // Default: allow first mitigation only
     private enableCOSD: boolean = true // Default: enabled
     private classifyOrderBlocks: boolean = true // Default: enabled
 
-    // Phase 3A - ICT 5-Criteria HP OB Validation
+    // ICT 5-criteria validation of HP order blocks
     private strict5CriteriaValidation: boolean = false // Default: relaxed (2 criteria)
     private requireFVGForHP: boolean = false // Default: FVG optional
     private requireCOSDForHP: boolean = false // Default: COSD optional
 
-    // Phase 3C - ATR-based OB Size Filtering
+    // Order block size filter based on ATR
     private minOBSizeATRMultiplier: number = 0.3 // Min OB size (30% of ATR)
     private maxOBSizeATRMultiplier: number = 2.0 // Max OB size (200% of ATR)
     private enableOBSizeFilter: boolean = false // Default: disabled for backward compatibility
@@ -150,7 +150,7 @@ export class SmartMoneyConcepts {
     private orderFlowSignals: OrderFlowSignal[] = []
     private readonly MAX_ORDER_FLOW_SIGNALS = 50
 
-    // Unicorn Setup tracking - prevent duplicate alerts for same breaker+FVG pair
+    // Unicorn setups already alerted, so each breaker and FVG pair alerts once
     private detectedUnicornPairs: Set<string> = new Set()
 
     // Confluence scoring system
@@ -193,19 +193,19 @@ export class SmartMoneyConcepts {
         this.volumeThreshold = config?.volumeThresholdInput ?? this.volumeThreshold
         this.requireVolumeConfirmation = config?.requireVolumeConfirmation ?? false
 
-        // Phase 1 - ICT Methodology Enhancements
+        // ICT methodology
         this.onlyTradeFreshOBs = config?.onlyTradeFreshOBs ?? this.onlyTradeFreshOBs
         this.maxOBMitigations = config?.maxOBMitigations ?? this.maxOBMitigations
         this.enableCOSD = config?.enableCOSD ?? this.enableCOSD
         this.classifyOrderBlocks = config?.classifyOrderBlocks ?? this.classifyOrderBlocks
 
-        // Phase 3A - ICT 5-Criteria HP OB Validation
+        // ICT 5-criteria validation of HP order blocks
         this.strict5CriteriaValidation =
             config?.strict5CriteriaValidation ?? this.strict5CriteriaValidation
         this.requireFVGForHP = config?.requireFVGForHP ?? this.requireFVGForHP
         this.requireCOSDForHP = config?.requireCOSDForHP ?? this.requireCOSDForHP
 
-        // Phase 3C - ATR-based OB Size Filtering
+        // Order block size filter based on ATR
         this.minOBSizeATRMultiplier = config?.minOBSizeATRMultiplier ?? this.minOBSizeATRMultiplier
         this.maxOBSizeATRMultiplier = config?.maxOBSizeATRMultiplier ?? this.maxOBSizeATRMultiplier
         this.enableOBSizeFilter = config?.enableOBSizeFilter ?? this.enableOBSizeFilter
@@ -228,7 +228,7 @@ export class SmartMoneyConcepts {
         const startTime = performance.now()
 
         try {
-            // Input validation - volume can be zero for backward compatibility
+            // Validate the input, volume may be zero for backward compatibility
             if (
                 !validateInputs(
                     high,
@@ -261,7 +261,7 @@ export class SmartMoneyConcepts {
                 return this.updateLastBar(high, low, open, close, time, volume)
             }
 
-            // New candle - proceed with normal update logic
+            // A new candle, so run the normal update
             logger.debug(
                 `[SMC] Updating new candle: ${time}, low ${low}, high ${high}, open ${open}, close ${close}, volume ${volume}`,
             )
@@ -591,11 +591,11 @@ export class SmartMoneyConcepts {
      */
     private startOfNewLeg(leg: number, size: number): boolean {
         // ta.change (built-in function) +5 overloads
-        // Compares the current source value to its value length bars ago and returns the difference.
+        // Compares the current source value to its value length bars ago and returns the difference
         // Syntax
         // ta.change(source) → series int
         // Returns
-        // The difference between the values when they are numerical.
+        // The difference between the values when they are numerical
 
         const prevLeg = this.getPrevLegValue(size)
         return leg !== prevLeg
@@ -780,9 +780,9 @@ export class SmartMoneyConcepts {
 
         // Syntax
         // crossover(x, y) → series[bool]
-        // The x-series is defined as having crossed over y-series if the value of x is greater than the value of y and the value of x was less than the value of y on the bar immediately preceding the current bar.
+        // The x-series is defined as having crossed over y-series if the value of x is greater than the value of y and the value of x was less than the value of y on the bar immediately preceding the current bar
         // Crossover detection: emulate ta.crossover(close, pivot.currentLevel)
-        // Uses the same level for previous and current close comparisons, matching behavior.
+        // Uses the same level for previous and current close comparisons, matching behavior
         const crossOver =
             ta.crossover(this.closes, highPivot.currentLevel) &&
             !highPivot.crossed &&
@@ -831,7 +831,7 @@ export class SmartMoneyConcepts {
             : true
 
         // Crossunder detection: emulate ta.crossunder(close, pivot.currentLevel)
-        // Uses the same level for previous and current close comparisons, matching behavior.
+        // Uses the same level for previous and current close comparisons, matching behavior
         const crossedUnder =
             ta.crossunder(this.closes, lowPivot.currentLevel) &&
             !lowPivot.crossed &&
@@ -1056,32 +1056,32 @@ export class SmartMoneyConcepts {
 
             // Phase 2: Check if HP Order Block failed and should become Breaker Block
             if (crossedOrderBlock && block.type === OrderBlockType.HIGH_PROBABILITY) {
-                // HP OB was violated - check if it should become a Breaker
+                // The HP OB was violated, check whether it becomes a breaker
 
                 // For HP Bullish OB (support): if price closes below, it failed → Bearish Breaker
                 // For HP Bearish OB (resistance): if price closes above, it failed → Bullish Breaker
                 if (block.bias === this.BULLISH && close < block.barLow) {
-                    // HP Bullish OB failed - becomes Bearish Breaker (resistance)
+                    // A failed HP bullish OB becomes a bearish breaker (resistance)
                     block.type = OrderBlockType.BREAKER
                     block.bias = this.BEARISH // FLIP ROLE!
                     becameBreaker = true
                     this.alerts.breakerBlockFormed = true
-                    // Don't delete - keep as Breaker
+                    // Keep it as a breaker instead of deleting it
                 } else if (block.bias === this.BEARISH && close > block.barHigh) {
-                    // HP Bearish OB failed - becomes Bullish Breaker (support)
+                    // A failed HP bearish OB becomes a bullish breaker (support)
                     block.type = OrderBlockType.BREAKER
                     block.bias = this.BULLISH // FLIP ROLE!
                     becameBreaker = true
                     this.alerts.breakerBlockFormed = true
-                    // Don't delete - keep as Breaker
+                    // Keep it as a breaker instead of deleting it
                 }
             }
 
             // Phase 3C: Check if Continuation OB failed and should become Mitigation Block
             if (crossedOrderBlock && block.type === OrderBlockType.CONTINUATION && !becameBreaker) {
-                // Continuation OB was violated - mark as Mitigation (failed to support trend)
+                // A violated continuation OB becomes a mitigation block, it failed to support the trend
                 block.type = OrderBlockType.MITIGATION
-                // Don't delete - keep as Mitigation for context
+                // Keep it as a mitigation block for context
             }
 
             // // Phase 3C: Check if Breaker/Mitigation failed and should become Reclaimed
@@ -1908,32 +1908,32 @@ export class SmartMoneyConcepts {
         let baseScore = 0
         let bonusScore = 0
 
-        // 1. Structure Alignment (40 points max) - BASE (includes OB hierarchy)
+        // 1. Structure alignment, base score up to 40 points, includes the OB hierarchy
         const structureScore = this.getStructureAlignmentScore()
         this.confluenceComponents.structureAlignment = structureScore
         baseScore += structureScore
 
-        // 2. Zone Alignment (25 points max) - BASE (increased from 20)
+        // 2. Zone alignment, base score up to 25 points
         const zoneScore = this.getZoneAlignmentScore()
         this.confluenceComponents.zoneAlignment = zoneScore
         baseScore += zoneScore
 
-        // 3. Session Timing (10 points max) - BASE (decreased from 15)
+        // 3. Session timing, base score up to 10 points
         const sessionScore = this.getSessionTimingScore()
         this.confluenceComponents.sessionTiming = sessionScore
         baseScore += sessionScore
 
-        // 4. Liquidity Context (10 points max) - BASE
+        // 4. Liquidity context, base score up to 10 points
         const liquidityScore = this.getLiquidityContextScore()
         this.confluenceComponents.liquidityContext = liquidityScore
         baseScore += liquidityScore
 
-        // 5. Market Maker Alignment (15 points max) - BASE
+        // 5. Market maker alignment, base score up to 15 points
         const marketMakerScore = this.getMarketMakerAlignmentScore()
         this.confluenceComponents.marketMakerAlignment = marketMakerScore
         baseScore += marketMakerScore
 
-        // 6. Volume Confirmation (25 points max) - BONUS
+        // 6. Volume confirmation, bonus of up to 25 points
         const volumeScore = this.getVolumeConfirmationScore()
         this.confluenceComponents.volumeConfirmation = volumeScore
         bonusScore += volumeScore
@@ -2051,21 +2051,21 @@ export class SmartMoneyConcepts {
 
         // Zone-based scoring (increased weights)
         if (zoneInfo === 'Premium') {
-            // Premium zone - good for sells
+            // Premium zone, good for sells
             if (this.swingTrend.bias === this.BEARISH || this.internalTrend.bias === this.BEARISH) {
                 score += 18 // Increased from 15
             } else {
                 score += 6 // Less ideal for buys (increased from 5)
             }
         } else if (zoneInfo === 'Discount') {
-            // Discount zone - good for buys
+            // Discount zone, good for buys
             if (this.swingTrend.bias === this.BULLISH || this.internalTrend.bias === this.BULLISH) {
                 score += 18 // Increased from 15
             } else {
                 score += 6 // Less ideal for sells (increased from 5)
             }
         } else {
-            score += 10 // Equilibrium - neutral (increased from 8)
+            score += 10 // Equilibrium is neutral
         }
 
         // Additional points for extreme zones
@@ -2244,12 +2244,12 @@ export class SmartMoneyConcepts {
 
             const currentVolume = this.volumes[this.volumes.length - 1] || 0
 
-            // For swing structure - higher volume threshold
+            // Swing structure needs a higher volume threshold
             if (!internal) {
                 return currentVolume > this.averageVolume * 0.8
             }
 
-            // For internal structure - lower volume threshold
+            // Internal structure uses a lower volume threshold
             return currentVolume > this.averageVolume * 0.5
         } catch (error) {
             logger.error((error as Error).message, { error: (error as Error).stack })
@@ -2621,18 +2621,18 @@ export class SmartMoneyConcepts {
 
             if (isBullish) {
                 if (consecutiveBearish > 0) {
-                    // Streak broken - we were counting bearish
+                    // The bearish streak is broken
                     break
                 }
                 consecutiveBullish++
             } else if (isBearish) {
                 if (consecutiveBullish > 0) {
-                    // Streak broken - we were counting bullish
+                    // The bullish streak is broken
                     break
                 }
                 consecutiveBearish++
             } else {
-                // Doji candle - always breaks any existing streak
+                // A doji always breaks the streak
                 // If no streak started yet, just skip this candle
                 if (consecutiveBullish > 0 || consecutiveBearish > 0) {
                     break
@@ -3099,17 +3099,17 @@ export class SmartMoneyConcepts {
      * 5. ✅ Strong Displacement - Fair Value Gap formation (institutions agreed on price)
      */
     private classifyOrderBlockType(pivot: Pivot, internal: boolean, bias: number): OrderBlockType {
-        // 1. Key Institutional Levels - Automatically met (we're at a pivot)
-        // 4. Market Structure Shift - Check if this pivot created a new high or low
+        // 1. Key institutional level, always met since this is a pivot
+        // 4. Market structure shift, whether this pivot made a new high or low
         const createsNewStructure = this.doesPivotCreateNewStructure(pivot, internal, bias)
 
-        // 2. Liquidity Sweep - Check if liquidity was swept before formation
+        // 2. Liquidity sweep, whether liquidity was swept before the OB formed
         const liquiditySwept = this.wasLiquiditySwept()
 
-        // 3. COSD - Check if Change of State of Delivery occurred
+        // 3. COSD, whether a change of state of delivery occurred
         const cosdDetected = this.alerts.changeOfStateOfDelivery
 
-        // 5. Strong Displacement - Check for recent FVG formation
+        // 5. Strong displacement, whether an FVG formed recently
         const hasFVG = this.hasRecentFVG(bias)
 
         // Strict 5-Criteria Validation (optional, default: false)
@@ -3154,10 +3154,10 @@ export class SmartMoneyConcepts {
         if (!internal) {
             // Compare current pivot level with historical extremes
             if (bias === this.BULLISH) {
-                // Bullish OB forms at low - check if it's a new low
+                // A bullish OB forms at a low, check whether it is a new low
                 return pivot.currentLevel <= Math.min(...this.lows.slice(-this.swingsLengthInput))
             } else {
-                // Bearish OB forms at high - check if it's a new high
+                // A bearish OB forms at a high, check whether it is a new high
                 return pivot.currentLevel >= Math.max(...this.highs.slice(-this.swingsLengthInput))
             }
         }

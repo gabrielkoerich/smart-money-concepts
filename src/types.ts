@@ -28,18 +28,18 @@ export interface SmartMoneyConceptsConfig {
     volumeThresholdInput?: number // Threshold for volume spikes (multiplier of avg volume)
     requireVolumeConfirmation?: boolean // Whether volume confirmation is required for signals
 
-    // Phase 1 - ICT Methodology Enhancements
+    // ICT methodology
     onlyTradeFreshOBs?: boolean // Only trade fresh order blocks (never mitigated before)
     maxOBMitigations?: number // Maximum times an OB can be traded (0 = fresh only, 1 = first mitigation only)
     enableCOSD?: boolean // Enable Change of State of Delivery detection
     classifyOrderBlocks?: boolean // Enable HP vs Continuation OB classification
 
-    // Phase 3A - ICT 5-Criteria HP OB Validation
+    // ICT 5-criteria validation of HP order blocks
     strict5CriteriaValidation?: boolean // Require all 5 ICT criteria for HP OBs (default: false)
     requireFVGForHP?: boolean // Require FVG (strong displacement) for HP OBs (default: false)
     requireCOSDForHP?: boolean // Require COSD for HP OBs (default: false)
 
-    // Phase 3C - ATR-based OB Size Filtering
+    // Order block size filter based on ATR
     minOBSizeATRMultiplier?: number // Minimum OB size as ATR multiplier (default: 0.3)
     maxOBSizeATRMultiplier?: number // Maximum OB size as ATR multiplier (default: 2.0)
     enableOBSizeFilter?: boolean // Enable ATR-based OB size filtering (default: false)
@@ -84,12 +84,12 @@ export class Alerts {
     institutionalVolume: boolean = false // Institutional Volume detected
     sessionBreakout: boolean = false // Session Breakout detected
 
-    // Phase 1 - ICT Methodology Enhancements
-    changeOfStateOfDelivery: boolean = false // COSD - Price traded through supporting candle's open
+    // ICT methodology
+    changeOfStateOfDelivery: boolean = false // COSD, price traded through the supporting candle's open
 
-    // Phase 2 - Breaker Blocks & The Unicorn
+    // Breaker blocks and the Unicorn
     breakerBlockFormed: boolean = false // HP OB failed and became Breaker
-    unicornSetup: boolean = false // The Unicorn - Breaker + FVG alignment
+    unicornSetup: boolean = false // The Unicorn, a breaker aligned with an FVG
 
     /**
      * Return a new object containing only the alert properties that are explicitly true.
@@ -296,7 +296,7 @@ export class OrderBlock {
     public mitigatedAt: number | null = null
     public wasMitigated: boolean = false // For test verification
 
-    // Phase 1 - ICT Methodology Enhancements
+    // ICT methodology
     public mitigationCount: number = 0 // Number of times OB has been touched
     public firstMitigationTime: number | null = null // Timestamp of first mitigation
     public type: OrderBlockType = OrderBlockType.CONTINUATION // OB classification

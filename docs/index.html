@@ -86,15 +86,15 @@
                     <p>
                         <em
                             >A TypeScript implementation of Smart Money Concepts
-                            (ICT methodology) for market structure analysis.
-                            Detects order blocks, fair value gaps, breaks of
-                            structure, changes of character, liquidity grabs,
-                            and more.</em
+                            and the ICT methodology for market structure analysis.
+                            It detects order blocks, fair value gaps, breaks of
+                            structure, changes of character and liquidity
+                            grabs.</em
                         >
                     </p>
                     <p>
-                        Zero runtime dependencies. Feed it OHLCV candles, get
-                        back structured market analysis.
+                        It has no runtime dependencies. You feed it OHLCV
+                        candles and it returns structured market analysis.
                     </p>
                     <p>
                         <span class="tag">typescript</span>
@@ -106,9 +106,9 @@
 
                 <h2>Installation</h2>
 
-                <pre><code><span class="keyword">bun install</span> smart-money-concepts</code></pre>
+                <pre><code><span class="keyword">bun add</span> smart-money-concepts</code></pre>
 
-                <h2>Quick Start</h2>
+                <h2>Quick start</h2>
 
                 <pre><code><span class="keyword">import</span> { SmartMoneyConcepts } <span class="keyword">from</span> <span class="string">'smart-money-concepts'</span>
 
@@ -133,7 +133,7 @@
 <span class="keyword">const</span> zone = smc.<span class="function">getCurrentZone</span>()     <span class="comment">// 'Premium' | 'Discount' | 'Equilibrium'</span>
 <span class="keyword">const</span> obs  = smc.<span class="function">getOrderBlocks</span>()    <span class="comment">// { swing, internal }</span></code></pre>
 
-                <h2>Bulk Processing</h2>
+                <h2>Bulk processing</h2>
 
                 <p>For backtesting, pass an array of candles at once:</p>
 
@@ -145,11 +145,11 @@
 
 <span class="keyword">const</span> allAlerts = smc.<span class="function">updateBulk</span>(candles)</code></pre>
 
-                <h2>Real-Time Updates</h2>
+                <h2>Real-time updates</h2>
 
                 <p>
-                    When streaming live data, the same timestamp is treated as
-                    an update to the current bar:
+                    With live data, a candle with the same timestamp updates
+                    the current bar:
                 </p>
 
                 <pre><code><span class="comment">// New bar</span>
@@ -161,11 +161,11 @@ smc.<span class="function">update</span>(<span class="number">107</span>, <span 
 <span class="comment">// New timestamp = new bar</span>
 smc.<span class="function">update</span>(<span class="number">108</span>, <span class="number">103</span>, <span class="number">106</span>, <span class="number">107</span>, <span class="number">1700000060</span>, <span class="number">600</span>)</code></pre>
 
-                <h2>What It Detects</h2>
+                <h2>What it detects</h2>
 
                 <ul class="feature-grid">
                     <li class="feature-item">
-                        <h3>Market Structure</h3>
+                        <h3>Market structure</h3>
                         <p>
                             Swing and internal structure with BOS (Break of
                             Structure) and CHoCH (Change of Character) detection
@@ -173,15 +173,15 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
                         </p>
                     </li>
                     <li class="feature-item">
-                        <h3>Order Blocks</h3>
+                        <h3>Order blocks</h3>
                         <p>
-                            HP, Continuation, Breaker, Mitigation, and Reclaimed
+                            HP, continuation, breaker, mitigation and reclaimed
                             types. Tracks formation, mitigation, and price
                             interaction.
                         </p>
                     </li>
                     <li class="feature-item">
-                        <h3>Fair Value Gaps</h3>
+                        <h3>Fair value gaps</h3>
                         <p>
                             Bullish and bearish imbalances with fill tracking.
                             ATR-based threshold filtering for significant gaps
@@ -191,21 +191,20 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
                     <li class="feature-item">
                         <h3>Liquidity</h3>
                         <p>
-                            Equal highs/lows identification, liquidity grab
-                            detection at key levels with follow-through
+                            Finds equal highs and lows, and detects liquidity
+                            grabs at those levels with follow-through
                             analysis.
                         </p>
                     </li>
                     <li class="feature-item">
-                        <h3>Premium / Discount</h3>
+                        <h3>Premium and discount</h3>
                         <p>
-                            Zone calculation with 5% threshold (Pine Script
-                            compliant). Identifies premium, discount, and
-                            equilibrium zones.
+                            Premium, discount and equilibrium zones with a 5%
+                            threshold, matching the Pine Script version.
                         </p>
                     </li>
                     <li class="feature-item">
-                        <h3>Volume Analysis</h3>
+                        <h3>Volume</h3>
                         <p>
                             Spike detection, institutional volume
                             identification, and average volume tracking with
@@ -213,14 +212,14 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
                         </p>
                     </li>
                     <li class="feature-item">
-                        <h3>Market Maker Model</h3>
+                        <h3>Market maker model</h3>
                         <p>
-                            Wyckoff phase detection: Accumulation, Markup,
-                            Distribution, and Markdown with confidence scoring.
+                            Wyckoff phases (accumulation, markup, distribution
+                            and markdown) with a confidence score.
                         </p>
                     </li>
                     <li class="feature-item">
-                        <h3>Order Flow</h3>
+                        <h3>Order flow</h3>
                         <p>
                             Absorption, exhaustion, initiative, and responsive
                             signals. Multi-factor confluence scoring (100+
@@ -229,9 +228,9 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
                     </li>
                 </ul>
 
-                <h2>API Reference</h2>
+                <h2>API reference</h2>
 
-                <h3>Core Methods</h3>
+                <h3>Core methods</h3>
 
                 <table class="api-table">
                     <thead>
@@ -268,7 +267,7 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
                     </tbody>
                 </table>
 
-                <h3>Market State</h3>
+                <h3>Market state</h3>
 
                 <table class="api-table">
                     <thead>
@@ -331,46 +330,46 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
                     <ul class="alerts-grid">
                         <li>
                             <code>swingBullishBOS</code> /
-                            <code>swingBearishBOS</code> &mdash; Swing Break of
+                            <code>swingBearishBOS</code>: Swing Break of
                             Structure
                         </li>
                         <li>
                             <code>swingBullishCHoCH</code> /
-                            <code>swingBearishCHoCH</code> &mdash; Swing Change
+                            <code>swingBearishCHoCH</code>: Swing Change
                             of Character
                         </li>
                         <li>
                             <code>internalBullishBOS</code> /
-                            <code>internalBearishBOS</code> &mdash; Internal
+                            <code>internalBearishBOS</code>: Internal
                             Break of Structure
                         </li>
                         <li>
                             <code>internalBullishCHoCH</code> /
-                            <code>internalBearishCHoCH</code> &mdash; Internal
+                            <code>internalBearishCHoCH</code>: Internal
                             Change of Character
                         </li>
                     </ul>
 
-                    <h4>Order Blocks</h4>
+                    <h4>Order blocks</h4>
                     <ul class="alerts-grid">
                         <li>
                             <code>swingBullishObBrokenDown</code> /
-                            <code>swingBearishObBrokenUp</code> &mdash; Swing OB
+                            <code>swingBearishObBrokenUp</code>: Swing OB
                             mitigation
                         </li>
                         <li>
                             <code>internalBullishObBrokenDown</code> /
-                            <code>internalBearishObBrokenUp</code> &mdash;
+                            <code>internalBearishObBrokenUp</code>:
                             Internal OB mitigation
                         </li>
                         <li>
                             <code>insideSwingBullishOrderBlock</code> /
-                            <code>insideSwingBearishOrderBlock</code> &mdash;
+                            <code>insideSwingBearishOrderBlock</code>:
                             Price inside swing OB
                         </li>
                         <li>
                             <code>insideInternalBullishOrderBlock</code> /
-                            <code>insideInternalBearishOrderBlock</code> &mdash;
+                            <code>insideInternalBearishOrderBlock</code>:
                             Price inside internal OB
                         </li>
                     </ul>
@@ -379,29 +378,29 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
                     <ul class="alerts-grid">
                         <li>
                             <code>equalHighs</code> /
-                            <code>equalLows</code> &mdash; Equal highs/lows
+                            <code>equalLows</code>: Equal highs/lows
                             (liquidity pools)
                         </li>
                         <li>
                             <code>bullishFairValueGap</code> /
-                            <code>bearishFairValueGap</code> &mdash; FVG
+                            <code>bearishFairValueGap</code>: FVG
                             detection
                         </li>
                         <li>
-                            <code>liquidityGrab</code> &mdash; Liquidity grab at
+                            <code>liquidityGrab</code>: Liquidity grab at
                             equal levels
                         </li>
                         <li>
                             <code>volumeSpike</code> /
-                            <code>institutionalVolume</code> &mdash; Volume
+                            <code>institutionalVolume</code>: Volume
                             events
                         </li>
                         <li>
-                            <code>breakerBlockFormed</code> &mdash; HP OB
+                            <code>breakerBlockFormed</code>: HP OB
                             failed, became breaker
                         </li>
                         <li>
-                            <code>unicornSetup</code> &mdash; Breaker + FVG
+                            <code>unicornSetup</code>: Breaker + FVG
                             alignment
                         </li>
                     </ul>
@@ -485,7 +484,7 @@ smc.<span class="function">update</span>(<span class="number">108</span>, <span 
 
             <footer id="page-footer">
                 <p>
-                    MIT License &mdash;
+                    MIT License &middot;
                     <a href="https://gabrielkoerich.com" style="margin-left: 0"
                         >Gabriel Koerich</a
                     >
