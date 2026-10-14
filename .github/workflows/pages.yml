@@ -28,7 +28,7 @@ jobs:
 
       - name: Build and deploy docs from the README with the shared theme
         id: deployment
-        uses: gabrielkoerich/zola-docs-action@v1
+        uses: gabrielkoerich/zola-docs-action@warm-test
         with:
           readme: README.md
           base-url: https://projects.gabrielkoerich.com/smart-money-concepts
