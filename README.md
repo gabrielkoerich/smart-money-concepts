@@ -1,5 +1,7 @@
 # smart-money-concepts
 
+[![CI](https://github.com/gabrielkoerich/smart-money-concepts/actions/workflows/release.yml/badge.svg)](https://github.com/gabrielkoerich/smart-money-concepts/actions/workflows/release.yml) [![npm](https://img.shields.io/npm/v/smart-money-concepts)](https://www.npmjs.com/package/smart-money-concepts) [![Downloads](https://img.shields.io/npm/dm/smart-money-concepts)](https://www.npmjs.com/package/smart-money-concepts) [![Docs](https://github.com/gabrielkoerich/smart-money-concepts/actions/workflows/pages.yml/badge.svg)](https://projects.gabrielkoerich.com/smart-money-concepts/) [![Types](https://img.shields.io/npm/types/smart-money-concepts)](https://www.npmjs.com/package/smart-money-concepts) [![License](https://img.shields.io/npm/l/smart-money-concepts)](https://projects.gabrielkoerich.com/smart-money-concepts/license/)
+
 A TypeScript implementation of Smart Money Concepts (SMC) and the ICT methodology for market structure analysis. It detects order blocks, fair value gaps, breaks of structure, changes of character and liquidity grabs.
 
 It has no runtime dependencies. You feed it OHLCV candles and it returns structured market analysis.
